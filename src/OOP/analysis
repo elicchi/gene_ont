@@ -1,0 +1,41 @@
+import numpy as np
+
+import numpy as np
+
+def build_annotation_matrix(gaf):
+    annotations = gaf.annotations
+
+    genes = []
+    terms = []
+
+    # collect unique genes and terms
+    for ann in annotations:
+        if ann.gene_id not in genes:
+            genes.append(ann.gene_id)
+        if ann.GOterm.ID not in terms:
+            terms.append(ann.GOterm.ID)
+
+    # create empty matrix
+    matrix = np.zeros((len(genes), len(terms)), dtype=int)
+
+    # fill matrix
+    for ann in annotations:
+        i = genes.index(ann.gene_id)
+        j = terms.index(ann.GOterm.ID)
+        matrix[i, j] = 1
+
+    return matrix, genes, terms
+
+
+def count_terms_per_gene(matrix, genes):
+    return {genes[i]: int(np.sum(matrix[i])) for i in range(len(genes))}
+
+def term_frequencies(matrix, terms):
+    return {terms[j]: int(np.sum(matrix[:, j])) for j in range(len(terms))}
+
+def build_matrix_for_category(gaf, category):
+    filtered = [ann for ann in gaf.annotations if ann.category() == category]
+    temp_gaf = GAF()
+    for ann in filtered:
+        temp_gaf.add_annotation(ann)
+    return build_annotation_matrix(temp_gaf)
