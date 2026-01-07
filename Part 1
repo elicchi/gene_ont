@@ -1,0 +1,91 @@
+# Download the Gene Ontology (Basic)
+!wget https://current.geneontology.org/ontology/go-basic.obo
+
+# Download the Human Gene Annotations (Gzipped)
+!wget https://current.geneontology.org/annotations/goa_human.gaf.gz
+
+import pandas as pd
+import gzip
+from abc import ABC, abstractmethod
+
+# --- DOMAIN MODELS ---
+class GOTerm:
+    def __init__(self, go_id, name, namespace):
+        self.go_id = go_id
+        self.name = name
+        self.namespace = namespace
+        self.parents = []
+
+class GeneOntologySystem:
+    def __init__(self):
+        self.ontology = {}      # dict of {id: GOTerm}
+        self.annotations = None # Pandas DataFrame
+
+    def load_data(self, obo_path, gaf_path):
+        print(f"Loading {obo_path}...")
+        self.ontology = self._parse_obo(obo_path)
+
+        print(f"Loading {gaf_path} (this may take a moment)...")
+        self.annotations = self._parse_gaf(gaf_path)
+        print("Data loaded successfully.")
+
+    def _parse_obo(self, path):
+        terms = {}
+        with open(path, 'r') as f:
+            current = None
+            for line in f:
+                line = line.strip()
+                if line == "[Term]":
+                    current = GOTerm(None, None, None)
+                elif current and line.startswith("id: "):
+                    current.go_id = line[4:]
+                elif current and line.startswith("name: "):
+                    current.name = line[6:]
+                elif current and line.startswith("namespace: "):
+                    current.namespace = line[11:]
+                elif current and line.startswith("is_a: "):
+                    parent_id = line[6:].split(" ! ")[0]
+                    current.parents.append(parent_id)
+                elif line == "" and current and current.go_id:
+                    terms[current.go_id] = current
+        return terms
+
+    def _parse_gaf(self, path):
+        # GAF files use ! for comments and are Tab-separated
+        # We only need specific columns to save memory
+        cols = [2, 4, 6, 8] # Symbol, GO_ID, Evidence, Aspect
+        names = ['Symbol', 'GO_ID', 'Evidence', 'Aspect']
+
+        # We use compression='infer' to handle .gz files automatically
+        df = pd.read_csv(path, sep='\t', comment='!', header=None,
+                         usecols=cols, names=names, low_memory=False)
+        return df
+
+    def get_info(self, go_id):
+        term = self.ontology.get(go_id)
+        if not term: return "Term not found."
+
+        genes = self.annotations[self.annotations['GO_ID'] == go_id]['Symbol'].unique()
+        return {
+            "name": term.name,
+            "namespace": term.namespace,
+            "parents": term.parents,
+            "gene_count": len(genes),
+            "sample_genes": list(genes[:5])
+        }
+  # --- TEST EXECUTION ---
+if __name__ == "__main__":
+    system = GeneOntologySystem()
+
+    # INPUT: Provide the paths to the official files you downloaded
+    system.load_data("go-basic.obo", "goa_human.gaf.gz")
+
+    # Verification: Query the term for 'Apoptotic Process'
+    test_id = "GO:0006915"
+    result = system.get_info(test_id)
+
+    print("\n--- OFFICIAL DATA TEST ---")
+    print(f"GO ID: {test_id}")
+    print(f"Name: {result['name']}")
+    print(f"Total Genes Annotated: {result['gene_count']}")
+    print(f"Sample Genes: {result['sample_genes']}")
