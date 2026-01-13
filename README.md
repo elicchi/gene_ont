@@ -14,4 +14,12 @@ src/
 
 │ └── analysis.py # NumPy-based numerical representations
 
+├── comparative/              # Part 3: Analytical and comparative computations
+
+│ ├── similarity.py         # GO term similarity metrics (Resnik, Lin, etc.)
+
+│ ├── neighborhood.py       # GO graph neighborhood, sibling/descendant computations
+
+│ └──  statistics.py         # Annotation statistics and visualization
+
 tests/ # Development tests
