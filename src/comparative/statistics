@@ -1,0 +1,92 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+class Annotation:
+    def __init__(self, go_term):
+        self.go_term = go_term
+
+    def category(self):
+      return "Unknown"
+class ExperimentalAnnotation(Annotation):
+    def category(self):
+        return "Experimental"
+
+class ComputationalAnnotation(Annotation):
+    def category(self):
+        return "Computational"
+
+class CuratedAnnotation(Annotation):
+    def category(self):
+        return "Curated"
+
+class GAF:
+    def __init__(self, annotations):
+        self.annotations = annotations  
+
+class AnnotationAnalyzer:
+
+    def __init__(self, gaf):
+        self._gaf = gaf
+        self._term_counts = None
+        self._category_counts = None
+
+    # Compute annotation counts per GO term 
+    def compute_term_counts(self):
+        all_terms = [ann.go_term.ID for ann in self._gaf.annotations]
+        self._term_counts = pd.Series(all_terms).value_counts()
+        return self._term_counts
+
+    #  Polymorphic category counting 
+    def compute_category_counts(self):
+        # SAME method call, DIFFERENT runtime behavior
+        categories = [ann.category() for ann in self._gaf.annotations]
+        self._category_counts = pd.Series(categories).value_counts()
+        return self._category_counts
+
+    #  Frequency distribution 
+    def frequency_distribution(self, bins=30):
+        if self._term_counts is None:
+            self.compute_term_counts()
+
+        plt.figure(figsize=(8, 5))
+        sns.histplot(self._term_counts, bins=bins)
+        plt.title("Frequency distribution of GO term annotations")
+        plt.xlabel("Number of annotations")
+        plt.ylabel("Number of GO terms")
+        plt.show()
+
+    #  Basic statistics 
+    def basic_statistics(self):
+        if self._term_counts is None:
+            self.compute_term_counts()
+
+        print(
+            f"Mean: {self._term_counts.mean():.2f}, "
+            f"Median: {self._term_counts.median():.2f}, "
+            f"Std: {self._term_counts.std():.2f}"
+        )
+
+    #  Bar chart of top terms 
+    def bar_chart(self, top_n=20):
+        if self._term_counts is None:
+            self.compute_term_counts()
+
+        plt.figure(figsize=(10, 6))
+        self._term_counts.head(top_n).plot(kind="bar")
+        plt.title(f"Top {top_n} GO terms")
+        plt.xlabel("GO Term")
+        plt.ylabel("Annotations")
+        plt.show()
+
+    #  Polymorphic category bar chart 
+    def category_bar_chart(self):
+        if self._category_counts is None:
+            self.compute_category_counts()
+
+        plt.figure(figsize=(6, 4))
+        self._category_counts.plot(kind="bar")
+        plt.title("Annotations per category")
+        plt.xlabel("Category")
+        plt.ylabel("Count")
+        plt.show()
