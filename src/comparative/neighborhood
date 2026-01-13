@@ -1,0 +1,49 @@
+class OntologyGraph:
+    def __init__(self, go_graph: GOgraph):
+        self._go_graph = go_graph
+
+    def get_siblings(self, term_id):
+        term = self._go_graph.get_term(term_id)
+        if not term:
+            return []
+        siblings = set()
+        for parent in term.parents:
+            siblings.update(child for child in parent.children if child != term)
+        return list(siblings)
+
+    def get_descendants(self, term_id):
+        term = self._go_graph.get_term(term_id)
+        if not term:
+            return set()
+        descendants = set()
+        stack = list(term.children)
+        while stack:
+            child = stack.pop()
+            if child not in descendants:
+                descendants.add(child)
+                stack.extend(child.children)
+        return descendants
+
+    def build_neighbourhood_graph(self, center_term_id, include_siblings=True):
+        graph = {}
+        center_term = self._go_graph.get_term(center_term_id)
+        if not center_term:
+            return graph 
+
+        graph[center_term.ID] = {
+            'name': center_term.name,
+            'children': [child.ID for child in center_term.children]
+        }    
+        descendants = self.get_descendants(center_term_id) 
+        if include_siblings:
+            siblings = self.get_siblings(center_term_id)
+            neighbourhood = descendants.union(siblings)
+        else:
+            neighbourhood = descendants
+  
+        for term in neighbourhood:
+            graph[term.ID] = {
+                'name': term.name,
+                'children': [child.ID for child in term.children]
+            }
+        return graph
