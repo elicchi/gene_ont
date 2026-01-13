@@ -1,0 +1,66 @@
+# test execution
+go_graph = GOgraph()
+
+t1 = GOterm("GO:0001", "Term1", "BP",definition="Definition 1")
+t2 = GOterm("GO:0002", "Term2", "BP",definition="Definition 2")
+t3 = GOterm("GO:0003", "Term3", "BP",definition="Definition 3")
+t4 = GOterm("GO:0004", "Term4", "BP",definition="Definition 4")
+t5 = GOterm("GO:0005", "Term5", "BP",definition="Definition 5")
+
+for term in [t1, t2, t3, t4, t5]:
+    go_graph.add_term(term)
+
+go_graph.add_edge("GO:0001", "GO:0002")
+go_graph.add_edge("GO:0001", "GO:0003")
+go_graph.add_edge("GO:0002", "GO:0004")
+go_graph.add_edge("GO:0003", "GO:0005")
+
+ontology = OntologyGraph(go_graph)
+
+print("Siblings of GO:0002:")
+siblings_t2 = ontology.get_siblings("GO:0002")
+print([t.ID for t in siblings_t2])  
+
+print("Siblings of GO:0003:")
+siblings_t3 = ontology.get_siblings("GO:0003")
+print([t.ID for t in siblings_t3]) 
+
+print("\nDescendants of GO:0001:")
+descendants_t1 = ontology.get_descendants("GO:0001")
+print([t.ID for t in descendants_t1]) 
+
+print("Descendants of GO:0002:")
+descendants_t2 = ontology.get_descendants("GO:0002")
+print([t.ID for t in descendants_t2])  
+
+print("Descendants of GO:0003:")
+descendants_t3 = ontology.get_descendants("GO:0003")
+print([t.ID for t in descendants_t3])  
+
+
+print("\nNeighbourhood graph of GO:0001:")
+graph_dict = ontology.build_neighbourhood_graph(center_term_id="GO:0001", include_siblings=True)
+
+for term_id, info in graph_dict.items():
+    print(f"{term_id}: name={info['name']}, children={info['children']}")
+
+''' output-->
+Siblings of GO:0002:
+['GO:0003']
+Siblings of GO:0003:
+['GO:0002']
+
+Descendants of GO:0001:
+['GO:0004', 'GO:0002', 'GO:0003', 'GO:0005']
+Descendants of GO:0002:
+['GO:0004']
+Descendants of GO:0003:
+['GO:0005']
+
+Neighbourhood graph of GO:0001:
+GO:0001: name=Term1, children=['GO:0002', 'GO:0003']
+GO:0004: name=Term4, children=[]
+GO:0002: name=Term2, children=['GO:0004']
+GO:0003: name=Term3, children=['GO:0005']
+GO:0005: name=Term5, children=[]
+'''
