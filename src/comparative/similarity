@@ -1,0 +1,78 @@
+from math import log
+from abc import ABC, abstractmethod
+
+class BaseGO: 
+    def __init__(self, go_graph):
+        self.go_graph = go_graph
+    def get_all_terms(self):
+        terms_dict = self.go_graph.terms
+        return list(terms_dict.values())
+
+# ABSTRACTION
+class GOSimilarity(BaseGO, ABC):
+    """Abstract base class for GO similarity measures"""   
+    def __init__(self, go_graph, annotation_counts, total_annotations):
+        super().__init__(go_graph)
+        self.annotation_counts = annotation_counts
+        self.total_annotations = total_annotations
+        
+        self.information_content = {
+            term_id: self.calculate_information_content(term_id)
+            for term_id in annotation_counts
+        }
+    
+    def calculate_information_content(self, term_id):
+        count = self.annotation_counts.get(term_id, 1)
+        probability = count / self.total_annotations
+        return -log(probability)
+    
+    def get_ancestors_including_self(self, go_term):
+        ancestors = go_term.get_ancestors()
+        return ancestors.union({go_term})
+    
+    def find_most_informative_common_ancestor(self, term1, term2):
+        ancestors1 = self.get_ancestors_including_self(term1)
+        ancestors2 = self.get_ancestors_including_self(term2)
+        common_ancestors = ancestors1.intersection(ancestors2)
+        
+        if not common_ancestors:
+            return None
+        
+        return max(
+            common_ancestors,
+            key=lambda term: self.information_content.get(term.ID, 0)
+        )
+    
+    #polymorphism 
+    @abstractmethod
+    def similarity(self, term1, term2):
+        pass
+
+class ResnikSimilarity(GOSimilarity): 
+    def similarity(self, term1, term2):
+        ancestors1 = self.get_ancestors_including_self(term1)
+        ancestors2 = self.get_ancestors_including_self(term2)
+        common_ancestors = ancestors1.intersection(ancestors2)
+        
+        if not common_ancestors:
+            return 0
+        
+        return max(
+            self.information_content.get(term.ID, 0)
+            for term in common_ancestors
+        )
+
+class LinSimilarity(GOSimilarity): 
+    def similarity(self, term1, term2):
+        mica = self.find_most_informative_common_ancestor(term1, term2)
+        if mica is None:
+            return 0
+        
+        mica_ic = self.information_content[mica.ID]
+        term1_ic = self.information_content.get(term1.ID, 0)
+        term2_ic = self.information_content.get(term2.ID, 0)
+        
+        if term1_ic == 0 or term2_ic == 0:
+            return 0
+        
+        return (2 * mica_ic) / (term1_ic + term2_ic)
