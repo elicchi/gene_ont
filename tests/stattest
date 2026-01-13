@@ -1,0 +1,60 @@
+# Test execution
+class Annotation:
+    def __init__(self, go_term, category_name):
+        self.go_term = go_term
+        self._category = category_name
+    
+    def category(self):
+        return self._category  # Polymorphic call
+
+class GAF:
+    def __init__(self):
+        self.annotations = []
+
+    def add_annotation(self, annotation):
+        self.annotations.append(annotation)
+
+
+# Sample GO terms
+t1 = GOterm("GO:0001", "Term1", "BP", definition="Definition 1")
+t2 = GOterm("GO:0002", "Term2", "BP", definition="Definition 2")
+t3 = GOterm("GO:0003", "Term3", "BP", definition="Definition 3")
+
+# Build GAF
+gaf = GAF()
+gaf.add_annotation(Annotation(t1, "Experimental"))
+gaf.add_annotation(Annotation(t1, "Computational"))
+gaf.add_annotation(Annotation(t2, "Curated"))
+gaf.add_annotation(Annotation(t2, "Experimental"))
+gaf.add_annotation(Annotation(t3, "Curated"))
+gaf.add_annotation(Annotation(t3, "Curated"))
+
+# Create analyzer
+analyzer = AnnotationAnalyzer(gaf)
+
+# Single print per output 
+print("Term counts:", analyzer.compute_term_counts())
+print("Category counts:", analyzer.compute_category_counts())
+print("Basic statistics:")
+analyzer.basic_statistics()
+
+# Visualizations (no print needed)
+analyzer.frequency_distribution()
+analyzer.bar_chart()
+analyzer.category_bar_chart()
+
+'''output-->
+Term counts: GO:0001    2
+GO:0002    2
+GO:0003    2
+Name: count, dtype: int64
+Category counts: Curated          3
+Experimental     2
+Computational    1
+Name: count, dtype: int64
+Basic statistics:
+Mean: 2.00, Median: 2.00, Std: 0.00
+
+
+
+'''
