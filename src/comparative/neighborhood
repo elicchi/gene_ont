@@ -1,4 +1,6 @@
-class OntologyGraph:
+import GOgraph from src.OOP.ontology
+
+class Neighbourhood:
     def __init__(self, go_graph: GOgraph):
         self._go_graph = go_graph
 
@@ -28,22 +30,20 @@ class OntologyGraph:
         graph = {}
         center_term = self._go_graph.get_term(center_term_id)
         if not center_term:
-            return graph 
-
-        graph[center_term.ID] = {
-            'name': center_term.name,
-            'children': [child.ID for child in center_term.children]
-        }    
-        descendants = self.get_descendants(center_term_id) 
+            return graph
+        
+        descendants = self.get_descendants(center_term_id)
+        neighbourhood = set()
+        neighbourhood.update(descendants)
+        neighbourhood.add(center_term)
+        
         if include_siblings:
             siblings = self.get_siblings(center_term_id)
-            neighbourhood = descendants.union(siblings)
-        else:
-            neighbourhood = descendants
-  
+            neighbourhood.update(siblings)
+                
         for term in neighbourhood:
             graph[term.ID] = {
                 'name': term.name,
                 'children': [child.ID for child in term.children]
-            }
+            }   
         return graph
