@@ -1,3 +1,4 @@
+import numpy as np
 
 from src.OOP.annotations import GAF
 from src.OOP.annotations import Annotation 
@@ -6,82 +7,43 @@ from src.OOP.annotations import ComputationalAnnotation
 from src.OOP.annotations import CuratedAnnotation
 from src.OOP.ontology import GOterm
 
+class Statistics:
+    def __init__(self, gaf, matrix, genes, terms):
 
-class SimilarityCalculator:
-    """
-    Calculates similarities between GO terms, genes, and annotations
-    based on the provided domain models.
-    """
+        self.gaf = gaf
+        self._matrix = matrix
+        self._genes = genes
+        self._terms = terms
 
-    @staticmethod
-    def similarity_namespace(term1, term2) :
-        """
-        Calculates similarity between two namespaces.
-        Returns True if identical (e.g., both 'biological_process'), else False.
-        """
-        if term1.namespace == term2.namespace:
-            return True
-        return False
+    def tc_statistics(self):
 
-    @staticmethod
-    def similarity_evidence(ann1, ann2) :
-        """
-        Calculates similarity between two Evidence categories.
-        Uses the polymorphic .category() method from Annotation classes.
-        """
-        # Exact category match (e.g., "experimental" vs "experimental")
-        if ann1.category() == ann2.category():
-            return True
-
-        return False
-
-    @staticmethod
-    def similarity_goid(term1, term2) :
-        """
-        Calculates Semantic Similarity between two GO IDs using Jaccard Index on Ancestors.
-
-        Formula: J(A, B) = |Ancestors(A) ∩ Ancestors(B)| / |Ancestors(A) ∪ Ancestors(B)|
-        """
-        if term1.ID == term2.ID:
-            return True
-
-        # Use the get_ancestors method from GOterm class
-
-        ancestors_1 = term1.get_ancestors()
-        ancestors_1.add(term1)
-
-        ancestors_2 = term2.get_ancestors()
-        ancestors_2.add(term2)
-
-        intersection = len(ancestors_1.intersection(ancestors_2))
-        union = len(ancestors_1.union(ancestors_2))
-
-        if union == 0:
-            return False
-
-        return intersection / union
-
-    def simlarity_bet_annotatations(self, ann1, ann2):
-        """
-         similarity between two Annotation objects.
-        """
-
-        # GO ID Similarity (Semantic)
-        sim_go = self.similarity_goid(ann1.GOterm, ann2.GOterm)
-
-        # Evidence Similarity
-        sim_ev = self.similarity_evidence(ann1, ann2)
-
-        # Namespace Similarity
-        sim_ns = self.similarity_namespace(ann1.GOterm, ann2.GOterm)
+        term_counts_array = np.sum(self._matrix, axis=1)
 
         
+        print(
+            f"Mean:   {np.mean(term_counts_array):.2f}\n"
+            f"Median: {np.median(term_counts_array):.2f}\n"
+            f"Std:    {np.std(term_counts_array):.2f}"
+        )
+
+    def ann_statistics(self):
+
+        if not self.gaf:
+            return "No GAF provided"
+
+
+        genes_counts_dict = self.gaf.count_annotations_per_gene()
+
+
+        counts_array = list(genes_counts_dict.values())
+
+
+        cat_summary = self.gaf.count_by_category()
 
         return {
-            "goid_semantic_similarity": sim_go,
-            "evidence_similarity": sim_ev,
-            "namespace_similarity": sim_ns,
-            
+            "total_annotations": len(self.gaf.annotations),
+            "unique_genes": len(genes_counts_dict),
+            "annotations_per_gene_mean": round(np.mean(counts_array), 2),
+            "annotations_per_gene_std": round(np.std(counts_array), 2),
+            "category_breakdown": cat_summary
         }
-        
-   
