@@ -15,7 +15,7 @@ go_graph.add_edge("GO:0001", "GO:0003")
 go_graph.add_edge("GO:0002", "GO:0004")
 go_graph.add_edge("GO:0003", "GO:0005")
 
-ontology = OntologyGraph(go_graph)
+ontology = Neighbourhood(go_graph)
 
 print("Siblings of GO:0002:")
 siblings_t2 = ontology.get_siblings("GO:0002")
