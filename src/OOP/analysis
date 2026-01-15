@@ -5,23 +5,19 @@ import numpy as np
 def build_annotation_matrix(gaf):
     annotations = gaf.annotations
 
-    genes = []
-    terms = []
+    genes = list({ann.gene_id for ann in annotations})
+    terms = list({ann.GOterm.ID for ann in annotations})
 
-    # collect unique genes and terms
-    for ann in annotations:
-        if ann.gene_id not in genes:
-            genes.append(ann.gene_id)
-        if ann.GOterm.ID not in terms:
-            terms.append(ann.GOterm.ID)
+    # create index maps for fast lookup
+    gene_idx = {gene: i for i, gene in enumerate(genes)}
+    term_idx = {term: j for j, term in enumerate(terms)}
 
-    # create empty matrix
     matrix = np.zeros((len(genes), len(terms)), dtype=int)
 
-    # fill matrix
+    # fill matrix efficiently
     for ann in annotations:
-        i = genes.index(ann.gene_id)
-        j = terms.index(ann.GOterm.ID)
+        i = gene_idx[ann.gene_id]
+        j = term_idx[ann.GOterm.ID]
         matrix[i, j] = 1
 
     return matrix, genes, terms
