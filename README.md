@@ -16,10 +16,10 @@ src/
 
 ├── comparative/              # Part 3: Analytical and comparative computations
 
-│ ├── similarity.py         # GO term similarity metrics (Resnik, Lin, etc.)
+│ ├── similarity.py         # similarity metrics(between terms,annotations)
 
 │ ├── neighborhood.py       # GO graph neighborhood, sibling/descendant computations
 
-│ └──  statistics.py         # Annotation statistics and visualization
+│ └──  statistics.py         # Annotation statistics(mean,median,std)
 
 tests/ # Development tests
