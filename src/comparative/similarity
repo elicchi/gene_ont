@@ -1,78 +1,87 @@
-from math import log
-from abc import ABC, abstractmethod
 
-class BaseGO: 
-    def __init__(self, go_graph):
-        self.go_graph = go_graph
-    def get_all_terms(self):
-        terms_dict = self.go_graph.terms
-        return list(terms_dict.values())
+from src.OOP.annotations import GAF
+from src.OOP.annotations import Annotation 
+from src.OOP.annotations import ExperimentalAnnotation 
+from src.OOP.annotations import ComputationalAnnotation
+from src.OOP.annotations import CuratedAnnotation
+from src.OOP.ontology import GOterm
 
-# ABSTRACTION
-class GOSimilarity(BaseGO, ABC):
-    """Abstract base class for GO similarity measures"""   
-    def __init__(self, go_graph, annotation_counts, total_annotations):
-        super().__init__(go_graph)
-        self.annotation_counts = annotation_counts
-        self.total_annotations = total_annotations
+
+class SimilarityCalculator:
+    """
+    Calculates similarities between GO terms, genes, and annotations
+    based on the provided domain models.
+    """
+
+    @staticmethod
+    def similarity_namespace(term1, term2) :
+        """
+        Calculates similarity between two namespaces.
+        Returns True if identical (e.g., both 'biological_process'), else False.
+        """
+        if term1.namespace == term2.namespace:
+            return True
+        return False
+
+    @staticmethod
+    def similarity_evidence(ann1, ann2) :
+        """
+        Calculates similarity between two Evidence categories.
+        Uses the polymorphic .category() method from Annotation classes.
+        """
+        # Exact category match (e.g., "experimental" vs "experimental")
+        if ann1.category() == ann2.category():
+            return True
+
+        return False
+
+    @staticmethod
+    def similarity_goid(term1, term2) :
+        """
+        Calculates Semantic Similarity between two GO IDs using Jaccard Index on Ancestors.
+
+        Formula: J(A, B) = |Ancestors(A) ∩ Ancestors(B)| / |Ancestors(A) ∪ Ancestors(B)|
+        """
+        if term1.ID == term2.ID:
+            return True
+
+        # Use the get_ancestors method from GOterm class
+
+        ancestors_1 = term1.get_ancestors()
+        ancestors_1.add(term1)
+
+        ancestors_2 = term2.get_ancestors()
+        ancestors_2.add(term2)
+
+        intersection = len(ancestors_1.intersection(ancestors_2))
+        union = len(ancestors_1.union(ancestors_2))
+
+        if union == 0:
+            return False
+
+        return intersection / union
+
+    def simlarity_bet_annotatations(self, ann1, ann2):
+        """
+         similarity between two Annotation objects.
+        """
+
+        # GO ID Similarity (Semantic)
+        sim_go = self.similarity_goid(ann1.GOterm, ann2.GOterm)
+
+        # Evidence Similarity
+        sim_ev = self.similarity_evidence(ann1, ann2)
+
+        # Namespace Similarity
+        sim_ns = self.similarity_namespace(ann1.GOterm, ann2.GOterm)
+
         
-        self.information_content = {
-            term_id: self.calculate_information_content(term_id)
-            for term_id in annotation_counts
+
+        return {
+            "goid_semantic_similarity": sim_go,
+            "evidence_similarity": sim_ev,
+            "namespace_similarity": sim_ns,
+            
         }
-    
-    def calculate_information_content(self, term_id):
-        count = self.annotation_counts.get(term_id, 1)
-        probability = count / self.total_annotations
-        return -log(probability)
-    
-    def get_ancestors_including_self(self, go_term):
-        ancestors = go_term.get_ancestors()
-        return ancestors.union({go_term})
-    
-    def find_most_informative_common_ancestor(self, term1, term2):
-        ancestors1 = self.get_ancestors_including_self(term1)
-        ancestors2 = self.get_ancestors_including_self(term2)
-        common_ancestors = ancestors1.intersection(ancestors2)
         
-        if not common_ancestors:
-            return None
-        
-        return max(
-            common_ancestors,
-            key=lambda term: self.information_content.get(term.ID, 0)
-        )
-    
-    #polymorphism 
-    @abstractmethod
-    def similarity(self, term1, term2):
-        pass
-
-class ResnikSimilarity(GOSimilarity): 
-    def similarity(self, term1, term2):
-        ancestors1 = self.get_ancestors_including_self(term1)
-        ancestors2 = self.get_ancestors_including_self(term2)
-        common_ancestors = ancestors1.intersection(ancestors2)
-        
-        if not common_ancestors:
-            return 0
-        
-        return max(
-            self.information_content.get(term.ID, 0)
-            for term in common_ancestors
-        )
-
-class LinSimilarity(GOSimilarity): 
-    def similarity(self, term1, term2):
-        mica = self.find_most_informative_common_ancestor(term1, term2)
-        if mica is None:
-            return 0
-        
-        mica_ic = self.information_content[mica.ID]
-        term1_ic = self.information_content.get(term1.ID, 0)
-        term2_ic = self.information_content.get(term2.ID, 0)
-        
-        if term1_ic == 0 or term2_ic == 0:
-            return 0
-        
-        return (2 * mica_ic) / (term1_ic + term2_ic)
+   
