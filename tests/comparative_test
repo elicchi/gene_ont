@@ -1,0 +1,120 @@
+# test execution
+from src.OOP.ontology import GOgraph
+from src.OOP.ontology import GOterm
+from src.OOP.annotations import GAF
+from src.OOP.annotations import Annotation
+from src.OOP.analysis import build_annotation_matrix
+from src.tests.ontology_test import Row
+
+
+graph = GOgraph()
+
+root_bp = GOterm("GO:0008150", "biological_process", "BP", "root")
+cell_death = GOterm("GO:0001906", "cell killing", "BP", "cell death")
+apoptosis = GOterm("GO:0006915", "apoptotic process", "BP", "programmed cell death")
+mol_func = GOterm("GO:0003674", "molecular_function", "MF", "root mf")
+
+graph = GOgraph()
+graph.add_term(root_bp)
+graph.add_term(cell_death)
+graph.add_term(apoptosis)
+graph.add_term(mol_func)
+
+graph.add_edge("GO:0008150", "GO:0001906") 
+graph.add_edge("GO:0001906", "GO:0006915")
+
+# Create Annotations
+gaf = GAF()
+row1 = Row("TP53", "GO:0006915", "EXP")  # TP53 -> Apoptosis (Exp)
+row2 = Row("TP53", "GO:0001906", "IDA")  # TP53 -> Cell killing (Exp)
+row3 = Row("BRCA1", "GO:0008150", "ISS") # BRCA1 -> Bio Process (Comp)
+row4 = Row("GENEX", "GO:0003674", "EXP") # GENEX -> Mol Function (Exp)
+annotations = []
+for r in [row1, row2, row3, row4]:
+    ann = create_annotation(r, graph)
+    gaf.add_annotation(ann)
+    annotations.append(ann)
+print(f"Total annotations loaded: {len(gaf.annotations)}")
+  
+print("Apoptosis Parent:", apoptosis.parents[0].name)  # → cell killing
+print("Root Children:", [c.name for c in root_bp.children]) # → ['cell killing']
+
+
+#  TEST NEIGHBOURHOOD 
+
+nb = Neighbourhood(graph)
+
+dev_proc = GOterm("GO:0032502", "developmental process", "BP", "dev")
+graph.add_term(dev_proc)
+graph.add_edge("GO:0008150", "GO:0032502") # root -> dev process
+
+
+sibs = nb.get_siblings("GO:0001906") # siblings of cell killing
+print("Siblings of 'cell killing':", [t.name for t in sibs]) 
+
+
+desc = nb.get_descendants("GO:0008150") # descendants of root
+print("Descendants of 'root':", [t.name for t in desc])
+
+
+nb_graph = nb.build_neighbourhood_graph("GO:0008150")
+print("Neighbourhood Graph Keys (Root):", list(nb_graph.keys()))
+
+# TEST STATISTICS 
+
+matrix, genes, terms = build_annotation_matrix(gaf)
+stats = Statistics(gaf, matrix, genes, terms)
+
+# Test Term Count Stats
+stats.tc_statistics()
+
+# Test Annotation Stats
+ann_stats = stats.ann_statistics()
+print("Unique Genes:", ann_stats['unique_genes'])
+print("Category Breakdown:", ann_stats['category_breakdown'])
+
+#  TEST SIMILARITY 
+
+calc = SimilarityCalculator()
+
+# 1. Compare TP53 (Apoptosis, Exp) vs BRCA1 (Root, Comp)
+ann_tp53 = annotations[0] 
+ann_brca = annotations[2]
+
+print(f"Comparing {ann_tp53.gene_id} ({ann_tp53.GOterm.name}) vs {ann_brca.gene_id} ({ann_brca.GOterm.name})")
+
+# Test Semantic Similarity (GO ID)
+sim_go = calc.similarity_goid(ann_tp53.GOterm, ann_brca.GOterm)
+print(f"GO Semantic Similarity: {sim_go:.4f}")
+
+# Test Namespace Similarity
+sim_ns = calc.similarity_namespace(ann_tp53.GOterm, ann_brca.GOterm)
+print(f"Namespace Similarity: {sim_ns}")
+
+# Test Evidence Similarity
+sim_ev = calc.similarity_evidence(ann_tp53, ann_brca)
+print(f"Evidence Similarity: {sim_ev}")
+
+# Test Full Calculation (Should now only have 3 keys)
+full_results = calc.simlarity_bet_annotatations(ann_tp53, ann_brca)
+print("Full Results Dictionary:", full_results)
+
+
+''' output -->
+  Total annotations loaded: 4
+Apoptosis Parent: cell killing
+Root Children: ['cell killing']
+Siblings of 'cell killing': ['developmental process']
+Descendants of 'root': ['cell killing', 'developmental process', 'apoptotic process']
+Neighbourhood Graph Keys (Root): ['GO:0008150', 'GO:0001906', 'GO:0032502', 'GO:0006915']
+Mean:   1.33
+Median: 1.00
+Std:    0.47
+Unique Genes: 3
+Category Breakdown: {'experimental': 3, 'computational': 1}
+Comparing TP53 (apoptotic process) vs BRCA1 (biological_process)
+GO Semantic Similarity: 0.3333
+Namespace Similarity: True
+Evidence Similarity: False
+Full Results Dictionary: {'goid_semantic_similarity': 0.3333333333333333, 'evidence_similarity': False, 'namespace_similarity': True}
+'''
