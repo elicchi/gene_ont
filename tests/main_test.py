@@ -10,8 +10,8 @@ from comparative.statistics import Statistics
 
 if __name__ == "__main__":
     # Relative paths
-    obo_path = "d/go-basic.obo"
-    gaf_path = "d/goa_human.gaf"
+    obo_path = "data/go-basic.obo"
+    gaf_path = "data/goa_human.gaf"
 
     system = GOSystem(obo_path, gaf_path)
 
