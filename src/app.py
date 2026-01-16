@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Load system once (important for performance)
 obo_path = "data/go-basic.obo"
-gaf_path = "data/goa_human.gaf.gz"
+gaf_path = "data/goa_human.gaf"
 system = GOSystem(obo_path, gaf_path)
 
 
