@@ -1,37 +1,34 @@
 import numpy as np
+from src.OOP.annotations import GAF
 
-import numpy as np
+class AnnotationMatrixBuilder:
+    """
+    Builds annotation matrices from a GAF object.
+    """
 
-def build_annotation_matrix(gaf):
-    annotations = gaf.annotations
+    def __init__(self, gaf: GAF):
+        self.gaf = gaf
 
-    genes = list({ann.gene_id for ann in annotations})
-    terms = list({ann.GOterm.ID for ann in annotations})
+    def build(self):
+        annotations = self.gaf.annotations
 
-    # create index maps for fast lookup
-    gene_idx = {gene: i for i, gene in enumerate(genes)}
-    term_idx = {term: j for j, term in enumerate(terms)}
+        genes = list({ann.gene_id for ann in annotations})
+        terms = list({ann.GOterm.ID for ann in annotations})
 
-    matrix = np.zeros((len(genes), len(terms)), dtype=int)
+        gene_idx = {gene: i for i, gene in enumerate(genes)}
+        term_idx = {term: j for j, term in enumerate(terms)}
 
-    # fill matrix efficiently
-    for ann in annotations:
-        i = gene_idx[ann.gene_id]
-        j = term_idx[ann.GOterm.ID]
-        matrix[i, j] = 1
+        matrix = np.zeros((len(genes), len(terms)), dtype=int)
 
-    return matrix, genes, terms
+        for ann in annotations:
+            i = gene_idx[ann.gene_id]
+            j = term_idx[ann.GOterm.ID]
+            matrix[i, j] = 1
+        return matrix, genes, terms
 
-
-def count_terms_per_gene(matrix, genes):
-    return {genes[i]: int(np.sum(matrix[i])) for i in range(len(genes))}
-
-def term_frequencies(matrix, terms):
-    return {terms[j]: int(np.sum(matrix[:, j])) for j in range(len(terms))}
-
-def build_matrix_for_category(gaf, category):
-    filtered = [ann for ann in gaf.annotations if ann.category() == category]
-    temp_gaf = GAF()
-    for ann in filtered:
-        temp_gaf.add_annotation(ann)
-    return build_annotation_matrix(temp_gaf)
+    def build_for_category(self, category):
+        filtered = [ann for ann in self.gaf.annotations if ann.category() == category]
+        temp_gaf = GAF()
+        for ann in filtered:
+            temp_gaf.add_annotation(ann)
+        return AnnotationMatrixBuilder(temp_gaf).build()
