@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gene Ontology Explorer</title>
+</head>
+<body>
+    <h1>Gene Ontology Explorer</h1>
+
+    <h2>Search genes by GO term</h2>
+    <form action="/genes" method="post">
+        <input type="text" name="go_id" placeholder="GO:0008150" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Analysis</h2>
+    <a href="/stats">View Annotation Statistics</a>
+</body>
+</html>
