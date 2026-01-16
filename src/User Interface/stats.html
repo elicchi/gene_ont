@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Annotation Statistics</title>
+</head>
+<body>
+    <h1>Annotation Statistics</h1>
+
+    <ul>
+        <li>Total annotations: {{ stats.total_annotations }}</li>
+        <li>Unique genes: {{ stats.unique_genes }}</li>
+        <li>Mean annotations per gene: {{ stats.annotations_per_gene_mean }}</li>
+        <li>Std annotations per gene: {{ stats.annotations_per_gene_std }}</li>
+    </ul>
+
+    <h2>Category Breakdown</h2>
+    <ul>
+        {% for cat, count in stats.category_breakdown.items() %}
+            <li>{{ cat }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="/">Back</a>
+</body>
+</html>
