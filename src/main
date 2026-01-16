@@ -16,5 +16,8 @@ class GOSystem:
 
 
 if __name__ == "__main__":
-    system = GOSystem(r"data/go-basic.obo",
-                  r"data/goa_human.gaf.gz")
+    # Relative paths
+    obo_path = "data/go-basic.obo"
+    gaf_path = "data/goa_human.gaf"
+
+    system = GOSystem(obo_path, gaf_path)
