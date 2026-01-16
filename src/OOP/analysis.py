@@ -1,5 +1,5 @@
 import numpy as np
-from annotations import GAF
+from .annotations import GAF
 
 class AnnotationMatrixBuilder:
     """
