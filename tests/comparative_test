@@ -1,11 +1,13 @@
-
 # test execution
 from src.OOP.ontology import GOgraph
 from src.OOP.ontology import GOterm
 from src.OOP.annotations import GAF
 from src.OOP.annotations import Annotation
 from src.OOP.analysis import build_annotation_matrix
-from src.tests.ontology_test import Row 
+from tests.ontology_test import Row,create_annotation
+from src.comparative.neighborhood import Neighbourhood
+from src.comparative.statistics import Statistics
+from src.comparative.similarity import SimilarityCalculator
 
 
 graph = GOgraph()
