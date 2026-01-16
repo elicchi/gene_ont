@@ -40,3 +40,15 @@ The following files are required but not included due to GitHub size limits:
 Download from: https://current.geneontology.org/ontology/go-basic.obo and: https://current.geneontology.org/annotations/goa_human.gaf.gz
 
 Place them in the `data/` folder.
+
+## How to start the app
+
+- Install Flask
+
+- Open a terminal inside the src folder and run:
+
+python app.py
+
+- Open in browser:
+
+http://127.0.0.1:5000/
