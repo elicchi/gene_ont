@@ -26,9 +26,19 @@ def parse_obo(obo_path):
                 parent_id = line[6:].split(" ! ")[0]
                 current['parents'].append(parent_id)
             elif line == "" and current is not None and 'id' in current:
-                
+                term = GOterm(
+                    ID=current['id'],
+                    name=current.get('name', ''),
+                    namespace=current.get('namespace', ''),
+                    definition=current.get('definition', '')
+                )
+
+                # temporarily store parent IDs on the term
+                term.GOterm_parents = current.get('parents', [])
+
                 graph.add_term(term)
                 current = None
+
 
     # Add edges
     for term in graph.terms.values():
