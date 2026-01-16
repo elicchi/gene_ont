@@ -1,5 +1,5 @@
-from src.parser import parse_obo, parse_gaf
-from src.OOP.analysis import build_annotation_matrix
+from parser import parse_obo, parse_gaf
+from OOP.analysis import AnnotationMatrixBuilder
 
 class GOSystem:
     def __init__(self, obo_path, gaf_path):
