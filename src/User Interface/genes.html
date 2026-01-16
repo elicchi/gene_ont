@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Genes for {{ go_id }}</title>
+</head>
+<body>
+    <h1>Genes annotated to {{ go_id }}</h1>
+
+    {% if genes %}
+        <ul>
+            {% for gene in genes[:50] %}
+                <li>{{ gene }}</li>
+            {% endfor %}
+        </ul>
+        <p>Total genes: {{ genes|length }}</p>
+    {% else %}
+        <p>No genes found for this GO term.</p>
+    {% endif %}
+
+    <a href="/">Back</a>
+</body>
+</html>
