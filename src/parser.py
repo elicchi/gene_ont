@@ -1,13 +1,7 @@
-# Download the Gene Ontology (Basic)
-!wget https://current.geneontology.org/ontology/go-basic.obo
-
-# Download the Human Gene Annotations (Gzipped)
-!wget https://current.geneontology.org/annotations/goa_human.gaf.gz
-
 import gzip
 import pandas as pd
-# from src.OOP.ontology import GOterm, GOgraph
-# from src.OOP.annotations import GAF, ExperimentalAnnotation, ComputationalAnnotation, CuratedAnnotation
+from OOP.ontology import GOterm, GOgraph
+from OOP.annotations import GAF, ExperimentalAnnotation, ComputationalAnnotation, CuratedAnnotation
 
 def parse_obo(obo_path):
     graph = GOgraph()
