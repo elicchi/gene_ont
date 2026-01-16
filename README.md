@@ -22,4 +22,21 @@ src/
 
 │ └──  statistics.py         # Annotation statistics(mean,median,std)
 
+├── main #Paart 2: Integration
+
+├── data/ # The GO and GAF files
+
 tests/ # Development tests
+
+## Required data files
+
+The following files are required but not included due to GitHub size limits:
+
+- go-basic.obo
+  
+- goa_human.gaf.gz
+
+
+Download from: https://current.geneontology.org/ontology/go-basic.obo and: https://current.geneontology.org/annotations/goa_human.gaf.gz
+
+Place them in the `data/` folder.
