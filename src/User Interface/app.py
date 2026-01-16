@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request
 from parser import parse_obo, parse_gaf
 from OOP.analysis import AnnotationMatrixBuilder
-from statistics_module import Statistics  
-from system import GOSystem               
+from comparative.statistics import Statistics  
+from main import GOSystem              
 
 app = Flask(__name__)
 
