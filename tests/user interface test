@@ -1,0 +1,22 @@
+input:
+GO:0008150
+output:
+Genes annotated to GO:0008150
+TP53
+BRCA1
+EGFR
+MAPK1
+...
+Total genes: 18342
+
+Click “View Annotation Statistics”
+
+Total annotations: 562341
+Unique genes: 18342
+Mean annotations per gene: 30.66
+Std annotations per gene: 14.21
+
+experimental: 213456
+computational: 287901
+curated: 60984
+
