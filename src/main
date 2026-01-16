@@ -11,7 +11,9 @@ class GOSystem:
         return self.gaf.get_genes_for_term(term) if term else set()
 
     def annotation_matrix(self):
-        return build_annotation_matrix(self.gaf)
+        builder = AnnotationMatrixBuilder(self.gaf)
+        return builder.build()
+
 
 if __name__ == "__main__":
     system = GOSystem(r"data/go-basic.obo",
