@@ -1,13 +1,19 @@
 # test execution
-from src.OOP.ontology import GOgraph
-from src.OOP.ontology import GOterm
-from src.OOP.annotations import GAF
-from src.OOP.annotations import Annotation
-from src.OOP.analysis import build_annotation_matrix
-from tests.ontology_test import Row,create_annotation
-from src.comparative.neighborhood import Neighbourhood
-from src.comparative.statistics import Statistics
-from src.comparative.similarity import SimilarityCalculator
+import sys
+import os
+
+# Add src folder to Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from OOP.ontology import GOgraph
+from OOP.ontology import GOterm
+from OOP.annotations import GAF
+from OOP.annotations import Annotation
+from OOP.analysis import AnnotationMatrixBuilder
+from ontology_test import Row,create_annotation
+from comparative.neighborhood import Neighbourhood
+from comparative.statistics import Statistics
+from comparative.similarity import SimilarityCalculator
 
 
 graph = GOgraph()
@@ -71,7 +77,8 @@ print("Neighbourhood Graph Keys (Root):", list(nb_graph.keys()))
 
 
 # TEST STATISTICS 
-matrix, genes, terms = build_annotation_matrix(gaf)
+builder = AnnotationMatrixBuilder(gaf)
+matrix, genes, terms = builder.build()
 stats = Statistics(gaf, matrix, genes, terms)
 # Test Term Count Stats
 stats.tc_statistics()
