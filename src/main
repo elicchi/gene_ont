@@ -1,0 +1,15 @@
+class GOSystem:
+    def __init__(self, obo_path, gaf_path):
+        self.graph = parse_obo(obo_path)
+        self.gaf = parse_gaf(gaf_path, self.graph)
+
+    def get_genes(self, go_id):
+        term = self.graph.get_term(go_id)
+        return self.gaf.get_genes_for_term(term) if term else set()
+
+    def annotation_matrix(self):
+        return build_annotation_matrix(self.gaf)
+
+if __name__ == "__main__":
+    system = GOSystem(r"data/go-basic.obo",
+                  r"data/goa_human.gaf.gz")
