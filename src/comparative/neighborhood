@@ -1,4 +1,4 @@
-from src.OOP.ontology import GOgraph 
+from OOP.ontology import GOgraph 
 
 class Neighbourhood:
     def __init__(self, go_graph: GOgraph):
