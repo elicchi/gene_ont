@@ -1,10 +1,10 @@
 
-from src.OOP.annotations import GAF
-from src.OOP.annotations import Annotation 
-from src.OOP.annotations import ExperimentalAnnotation 
-from src.OOP.annotations import ComputationalAnnotation
-from src.OOP.annotations import CuratedAnnotation
-from src.OOP.ontology import GOterm
+from OOP.annotations import GAF
+from OOP.annotations import Annotation 
+from OOP.annotations import ExperimentalAnnotation 
+from OOP.annotations import ComputationalAnnotation
+from OOP.annotations import CuratedAnnotation
+from OOP.ontology import GOterm
 
 
 class SimilarityCalculator:
