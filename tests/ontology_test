@@ -1,9 +1,14 @@
 #import the classes
-from src.ontology.ontology import GOgraph
-from src.ontology.ontology import GOterm
-from src.ontology.annotations import GAF
-from src.ontology.annotations import Annotation
-from src.ontology.analysis import build_annotation_matrix
+import sys
+import os
+
+# Add src folder to Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
+from OOP.ontology import GOgraph
+from OOP.ontology import GOterm
+from OOP.annotations import GAF, Annotation, ComputationalAnnotation, ExperimentalAnnotation, CuratedAnnotation
+from OOP.analysis import AnnotationMatrixBuilder
 #test the classes, methods and functions
 def create_annotation(row, go_graph):
     go_term = go_graph.get_term(row.go_id)
@@ -84,10 +89,9 @@ print(ann.gene_id, ann.GOterm.name, ann.category())
 # Output: TP53 apoptotic process experimental
 
 
-matrix, genes, terms = build_annotation_matrix(gaf)
+builder = AnnotationMatrixBuilder(gaf)
+matrix, genes, terms = builder.build()
+
 
 tp53 = matrix[genes.index("TP53")]
 brca1 = matrix[genes.index("BRCA1")]
-
-print(count_terms_per_gene(matrix, genes))
-print(term_frequencies(matrix,terms))
