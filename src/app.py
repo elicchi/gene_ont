@@ -126,6 +126,30 @@ def neighbourhood_view():
         term_id=term_id
     )
 
+# Matrix view
+@app.route("/matrix")
+def matrix_view():
+    # Build annotation matrix
+    builder = AnnotationMatrixBuilder(system.gaf)
+    matrix, genes, terms = builder.build()
+
+    # Limit size for UI (first 20 genes × 20 GO terms)
+    max_genes = 20
+    max_terms = 20
+    subset_matrix = matrix[:max_genes, :max_terms]
+    subset_genes = genes[:max_genes]
+    subset_terms = terms[:max_terms]
+
+    # Convert to list of lists for easier rendering in Jinja2
+    matrix_list = subset_matrix.tolist()
+
+    return render_template(
+        "matrix.html",
+        matrix=matrix_list,
+        genes=subset_genes,
+        terms=subset_terms
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
