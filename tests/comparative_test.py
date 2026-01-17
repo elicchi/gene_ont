@@ -72,24 +72,11 @@ print("Neighbourhood Graph Keys (Root):", list(nb_graph.keys()))
 #output --> Neighbourhood Graph Keys (Root): ['GO:0008150', 'GO:0001906', 'GO:0032502', 'GO:0006915']
 
 
-# TEST STATISTICS 
+#  TEST STATISTICS
 stats = Statistics(gaf)
-# 1. Get unique GO term IDs from the GAF
-unique_term_ids = {ann.GOterm.ID for ann in gaf.annotations}
-final_output = {}
-for go_id in unique_term_ids:
-    # We call the method; since we know these IDs exist in gaf
-    data = stats.tc_statistics(go_id)
-    
-    # Store in the dictionary using the GO ID as the key
-    final_output[go_id] = {
-        'num_genes': data['num_genes'],
-        'annotations_per_gene_mean': data['annotations_per_gene_mean'],
-        'annotations_per_gene_std': data['annotations_per_gene_std'],
-        'category_breakdown': data['category_breakdown']
-    }
-print(f"statstical analysis {final_output}")
-#output -->statstical analysis {'GO:0003674': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}, 'GO:0008150': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'computational': 1}}, 'GO:0006915': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}, 'GO:0001906': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}}
+final_output = stats.get_summary()
+print(f"statistical analysis {final_output}")
+# output --> statistical analysis {'GO:0003674': {'go_term': 'GO:0003674', 'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}, 'GO:0008150': {'go_term': 'GO:0008150', 'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'computational': 1}}, 'GO:0006915': {'go_term': 'GO:0006915', 'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}, 'GO:0001906': {'go_term': 'GO:0001906', 'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}}
 
 
 #  TEST SIMILARITY 
