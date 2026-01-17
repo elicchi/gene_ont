@@ -127,29 +127,30 @@ def neighbourhood_view():
     )
 
 # Matrix view
-@app.route("/matrix")
-def matrix_view():
-    # Build annotation matrix
-    builder = AnnotationMatrixBuilder(system.gaf)
-    matrix, genes, terms = builder.build()
+@app.route("/matrix_stats")
+def matrix_stats_view():
+    stats_obj = Statistics(system.gaf)
+    summary = stats_obj.get_summary()  # returns dict with stats per GO term
 
-    # Limit size for UI (first 20 genes × 20 GO terms)
-    max_genes = 20
-    max_terms = 20
-    subset_matrix = matrix[:max_genes, :max_terms]
-    subset_genes = genes[:max_genes]
-    subset_terms = terms[:max_terms]
+    # Convert summary dict to lists for table
+    go_terms = []
+    num_genes = []
+    mean_anns = []
+    std_anns = []
 
-    # Convert to list of lists for easier rendering in Jinja2
-    matrix_list = subset_matrix.tolist()
+    for go_id, stat in summary.items():
+        go_terms.append(go_id)
+        num_genes.append(stat["num_genes"])
+        mean_anns.append(stat["annotations_per_gene_mean"])
+        std_anns.append(stat["annotations_per_gene_std"])
 
     return render_template(
-        "matrix.html",
-        matrix=matrix_list,
-        genes=subset_genes,
-        terms=subset_terms
+        "matrix_stats.html",
+        go_terms=go_terms,
+        num_genes=num_genes,
+        mean_anns=mean_anns,
+        std_anns=std_anns
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True)
