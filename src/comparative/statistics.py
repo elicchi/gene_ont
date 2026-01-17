@@ -8,42 +8,54 @@ from OOP.annotations import CuratedAnnotation
 from OOP.ontology import GOterm
 
 class Statistics:
-    def __init__(self, gaf, matrix, genes, terms):
-
+    def __init__(self, gaf):
+        """
+        gaf.annotations returns a tuple of Annotation objects.
+        """
         self.gaf = gaf
-        self._matrix = matrix
-        self._genes = genes
-        self._terms = terms
 
-    def tc_statistics(self):
-
-        term_counts_array = np.sum(self._matrix, axis=1)
-
+    def tc_statistics(self, go_term_id):
+        # 1. Access the annotations 
+        all_anns = self.gaf.annotations
         
-        print(
-            f"Mean:   {np.mean(term_counts_array):.2f}\n"
-            f"Median: {np.median(term_counts_array):.2f}\n"
-            f"Std:    {np.std(term_counts_array):.2f}"
-        )
+        if not all_anns:
+            return "No annotations available"
 
-    def ann_statistics(self):
+        # 2. Filter for the specific GO term ID
+        term_annotations = [ann for ann in all_anns if ann.GOterm.ID == go_term_id]
 
-        if not self.gaf:
-            return "No GAF provided"
+        if not term_annotations:
+            return f"GO term {go_term_id} not found in annotations."
 
+        # 3. Aggregate data in a single pass using dictionaries
+        # gene_counts will store gene_id -> number of annotations
+        # cat_summary will store category_name -> count
+        gene_counts = {}
+        cat_summary = {}
 
-        genes_counts_dict = self.gaf.count_annotations_per_gene()
+        for ann in term_annotations:
+            # Handle Gene Counts
+            id = ann.gene_id
+            if id in gene_counts:
+                gene_counts[id] += 1
+            else:
+                gene_counts[id] = 1
+            
+            # Handle Category Summary
+            cat = ann.category()
+            if cat in cat_summary:
+                cat_summary[cat] += 1
+            else:
+                cat_summary[cat] = 1
 
+        # 4. Extract values for numerical analysis
+        counts_per_gene = list(gene_counts.values())
 
-        counts_array = list(genes_counts_dict.values())
-
-
-        cat_summary = self.gaf.count_by_category()
-
+        # 5. Return results
         return {
-            "total_annotations": len(self.gaf.annotations),
-            "unique_genes": len(genes_counts_dict),
-            "annotations_per_gene_mean": round(np.mean(counts_array), 2),
-            "annotations_per_gene_std": round(np.std(counts_array), 2),
+            "go_term": go_term_id,
+            "num_genes": len(gene_counts),
+            "annotations_per_gene_mean": round(float(np.mean(counts_per_gene)), 2),
+            "annotations_per_gene_std": round(float(np.std(counts_per_gene)), 2),
             "category_breakdown": cat_summary
         }
