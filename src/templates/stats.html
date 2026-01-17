@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Statistics</title>
+    <title>GO Term Statistics</title>
 </head>
 <body>
-    <h1>Annotation Statistics</h1>
 
-    <ul>
-        <li>Total annotations: {{ stats.total_annotations }}</li>
-        <li>Unique genes: {{ stats.unique_genes }}</li>
-        <li>Mean annotations per gene: {{ stats.annotations_per_gene_mean }}</li>
-        <li>Std annotations per gene: {{ stats.annotations_per_gene_std }}</li>
-    </ul>
+<h1>GO Term Statistics</h1>
 
-    <h2>Category Breakdown</h2>
+<form method="get">
+    <label for="go_id">Enter GO Term ID:</label>
+    <input type="text" name="go_id" id="go_id" placeholder="e.g. GO:0008150" value="{{ go_id if go_id else '' }}" required>
+    <button type="submit">Get Statistics</button>
+</form>
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% if stats %}
+    <h2>Statistics for {{ stats.go_term }}</h2>
+
+    <p><strong>Number of genes:</strong> {{ stats.num_genes }}</p>
+    <p><strong>Mean annotations per gene:</strong> {{ stats.annotations_per_gene_mean }}</p>
+    <p><strong>Std dev annotations per gene:</strong> {{ stats.annotations_per_gene_std }}</p>
+
+    <h3>Category Breakdown</h3>
     <ul>
-        {% for cat, count in stats.category_breakdown.items() %}
-            <li>{{ cat }}: {{ count }}</li>
+        {% for category, count in stats.category_breakdown.items() %}
+            <li>{{ category }}: {{ count }}</li>
         {% endfor %}
     </ul>
+{% endif %}
 
-    <a href="/">Back</a>
+<p><a href="/">Back to Home</a></p>
+
 </body>
 </html>
