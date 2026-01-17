@@ -77,9 +77,21 @@ def compare():
 
     sim = SimilarityCalculator()
 
+    # include evidence similarity:
+    # Take one annotation per term as an example (or compute all vs all)
+    ann1 = system.gaf.get_annotations_by_gene(go1)
+    ann2 = system.gaf.get_annotations_by_gene(go2)
+
+    # fallback if no annotation exists for term
+    ev_similarity = None
+    if ann1 and ann2:
+        # take first annotation for simplicity
+        ev_similarity = sim.similarity_evidence(ann1[0], ann2[0])
+
     result = {
         "same_namespace": sim.similarity_namespace(term1, term2),
-        "semantic_similarity": sim.similarity_goid(term1, term2)
+        "semantic_similarity": sim.similarity_goid(term1, term2),
+        "evidence_similarity": ev_similarity
     }
 
     return render_template(
