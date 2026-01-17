@@ -104,9 +104,16 @@ def neighbourhood_view():
             term=term,
             parents=parents,
             children=children,
-            siblings=siblings
+            siblings=siblings,
+            term_id=term_id
         )
-    return render_template("neighbourhood.html", term=None)
+
+    return render_template(
+        "neighbourhood.html",
+        term=None,
+        term_id=term_id
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
