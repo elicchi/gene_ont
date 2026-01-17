@@ -122,7 +122,7 @@ print(f"Evidence Similarity: {sim_ev}")
 
 
 # Test Full Calculation (Should now only have 3 keys)
-full_results = calc.simlarity_bet_annotatations(ann_tp53, ann_brca)
+full_results = calc.similarity_bet_annotations(ann_tp53, ann_brca)
 print("Full Results Dictionary:", full_results)
 #output --> Full Results Dictionary: {'goid_semantic_similarity': 0.3333333333333333, 'evidence_similarity': False, 'namespace_similarity': True}
 
