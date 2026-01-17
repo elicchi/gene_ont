@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GO Term Neighbourhood</title>
+</head>
+<body>
+    <h1>GO Term Neighbourhood</h1>
+
+    <form method="post">
+        <label for="go_id">Enter GO Term ID:</label>
+        <input type="text" name="go_id" id="go_id" placeholder="e.g. GO:0008150" required>
+        <button type="submit">Show Neighbourhood</button>
+    </form>
+
+    {% if term %}
+        <h2>Term: {{ term.ID }} - {{ term.name }}</h2>
+        <p><strong>Parents:</strong> {{ parents | join(', ') if parents else 'None' }}</p>
+        <p><strong>Children:</strong> {{ children | join(', ') if children else 'None' }}</p>
+        <p><strong>Siblings:</strong> {{ siblings | join(', ') if siblings else 'None' }}</p>
+    {% elif term_id %}
+        <p>Invalid GO term ID: {{ term_id }}</p>
+    {% endif %}
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>
