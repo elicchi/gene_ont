@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GO Term Statistics Matrix</title>
+</head>
+<body>
+    <h1>Statistics for GO Term: {{ stats.go_term }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>GO Term ID</td><td>{{ stats.go_term }}</td></tr>
+            <tr><td>Number of Genes</td><td>{{ stats.num_genes }}</td></tr>
+            <tr><td>Mean Annotations per Gene</td><td>{{ stats.annotations_per_gene_mean }}</td></tr>
+            <tr><td>Std Dev Annotations per Gene</td><td>{{ stats.annotations_per_gene_std }}</td></tr>
+            {% for category, count in stats.category_breakdown.items() %}
+            <tr><td>Category: {{ category }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>
