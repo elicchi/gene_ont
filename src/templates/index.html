@@ -6,10 +6,17 @@
 <body>
     <h1>Gene Ontology Explorer</h1>
 
-    <h2>Search genes by GO term</h2>
-    <form action="/genes" method="post">
+    <h2>Search GO Term</h2>
+    <form action="/term" method="post">
         <input type="text" name="go_id" placeholder="GO:0008150" required>
         <button type="submit">Search</button>
+    </form>
+
+    <h2>Compare Two GO Terms</h2>
+    <form action="/compare" method="post">
+        <input type="text" name="go1" placeholder="GO:0008150" required>
+        <input type="text" name="go2" placeholder="GO:0009987" required>
+        <button type="submit">Compare</button>
     </form>
 
     <h2>Analysis</h2>
