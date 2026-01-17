@@ -39,11 +39,26 @@ def term():
 # Statistics page
 @app.route("/stats")
 def stats():
-    matrix, genes, terms = system.annotation_matrix()
-    stats_obj = Statistics(system.gaf, matrix, genes, terms)
-    summary = stats_obj.ann_statistics()
-
-    return render_template("stats.html", stats=summary)
+    go_id = request.args.get("go_id")
+    stats_obj = Statistics(system.gaf)
+    
+    if not go_id:
+        return render_template("stats.html")
+        
+    result = stats_obj.tc_statistics(go_id)
+    
+    if isinstance(result, str):
+        return render_template(
+            "stats.html",
+            go_id=go_id,
+            error=result
+        )
+        
+    return render_template(
+        "stats.html",
+        go_id=go_id,
+        stats=result
+    )
 
 
 # GO term comparison
