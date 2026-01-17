@@ -23,9 +23,7 @@ class SimilarityCalculator:
         Calculates similarity between two namespaces.
         Returns True if identical (e.g., both 'biological_process'), else False.
         """
-        if term1.namespace == term2.namespace:
-            return True
-        return False
+        return term1.namespace == term2.namespace
 
     @staticmethod
     def similarity_evidence(ann1, ann2) :
@@ -34,10 +32,7 @@ class SimilarityCalculator:
         Uses the polymorphic .category() method from Annotation classes.
         """
         # Exact category match (e.g., "experimental" vs "experimental")
-        if ann1.category() == ann2.category():
-            return True
-
-        return False
+        return ann1.category() == ann2.category()
 
     @staticmethod
     def similarity_goid(term1, term2) :
@@ -46,8 +41,6 @@ class SimilarityCalculator:
 
         Formula: J(A, B) = |Ancestors(A) ∩ Ancestors(B)| / |Ancestors(A) ∪ Ancestors(B)|
         """
-        if term1.ID == term2.ID:
-            return True
 
         # Use the get_ancestors method from GOterm class
 
@@ -65,7 +58,7 @@ class SimilarityCalculator:
 
         return intersection / union
 
-    def simlarity_bet_annotatations(self, ann1, ann2):
+    def similarity_between_annotations(self, ann1, ann2):
         """
          similarity between two Annotation objects.
         """
@@ -78,6 +71,7 @@ class SimilarityCalculator:
 
         # Namespace Similarity
         sim_ns = self.similarity_namespace(ann1.GOterm, ann2.GOterm)
+
 
         
 
