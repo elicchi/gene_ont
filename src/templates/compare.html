@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GO Term Comparison</title>
+</head>
+<body>
+
+{% if error %}
+    <p>{{ error }}</p>
+{% else %}
+    <h1>GO Term Comparison</h1>
+
+    <h2>{{ term1.ID }} – {{ term1.name }}</h2>
+    <p>Namespace: {{ term1.namespace }}</p>
+
+    <h2>{{ term2.ID }} – {{ term2.name }}</h2>
+    <p>Namespace: {{ term2.namespace }}</p>
+
+    <h3>Similarity Results</h3>
+    <ul>
+        <li>Same namespace: {{ result.same_namespace }}</li>
+        <li>Semantic similarity score: {{ result.semantic_similarity }}</li>
+    </ul>
+{% endif %}
+
+<a href="/">Back</a>
+</body>
+</html>
