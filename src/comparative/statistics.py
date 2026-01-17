@@ -59,3 +59,8 @@ class Statistics:
             "annotations_per_gene_std": round(float(np.std(counts_per_gene)), 2),
             "category_breakdown": cat_summary
         }
+
+def get_summary(self):
+        #Returns the master dictionary for all terms in the GAF
+        unique_ids = {ann.GOterm.ID for ann in self.gaf.annotations}
+        return {go_id: self.tc_statistics(go_id) for go_id in unique_ids}
