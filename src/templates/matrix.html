@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>GO Annotation Matrix</title>
+    <title>GO Term Statistics Matrix</title>
 </head>
 <body>
-    <h1>GO Annotation Matrix</h1>
-    <p>Displaying a subset of genes × GO terms (first 20 genes and first 20 GO terms)</p>
+    <h1>GO Term Statistics Matrix</h1>
+    <p>Each row shows a GO term and its analytical statistics.</p>
 
     <table>
         <thead>
             <tr>
-                <th>Gene / GO Term</th>
-                {% for term in terms %}
-                    <th>{{ term }}</th>
-                {% endfor %}
+                <th>GO Term</th>
+                <th>Number of Genes</th>
+                <th>Mean Annotations per Gene</th>
+                <th>Std Dev Annotations per Gene</th>
             </tr>
         </thead>
         <tbody>
-            {% for i, gene in enumerate(genes) %}
-                <tr>
-                    <td>{{ gene }}</td>
-                    {% for val in matrix[i] %}
-                        <td>{{ val }}</td>
-                    {% endfor %}
-                </tr>
+            {% for i in range(go_terms|length) %}
+            <tr>
+                <td>{{ go_terms[i] }}</td>
+                <td>{{ num_genes[i] }}</td>
+                <td>{{ mean_anns[i] }}</td>
+                <td>{{ std_anns[i] }}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
