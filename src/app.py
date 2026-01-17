@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from parser import parse_obo, parse_gaf
 from OOP.analysis import AnnotationMatrixBuilder
+from OOP.analysis import Neighbourhood
 from comparative.similarity import SimilarityCalculator
 from comparative.statistics import Statistics
 from main import GOSystem
@@ -12,6 +13,7 @@ obo_path = "data/go-basic.obo"
 gaf_path = "data/goa_human.gaf"
 system = GOSystem(obo_path, gaf_path)
 
+neighbourhood = Neighbourhood(system.graph)
 
 @app.route("/")
 def index():
@@ -87,6 +89,24 @@ def compare():
         result=result
     )
 
+# Neighbourhood visualization
+@app.route("/neighbourhood", methods=["GET", "POST"])
+def neighbourhood_view():
+    term_id = request.form.get("go_id") if request.method == "POST" else None
+    term = system.graph.get_term(term_id) if term_id else None
+
+    if term:
+        parents = [p.ID for p in term.parents]
+        children = [c.ID for c in term.children]
+        siblings = [s.ID for s in neighbourhood.get_siblings(term_id)]
+        return render_template(
+            "neighbourhood.html",
+            term=term,
+            parents=parents,
+            children=children,
+            siblings=siblings
+        )
+    return render_template("neighbourhood.html", term=None)
 
 if __name__ == "__main__":
     app.run(debug=True)
