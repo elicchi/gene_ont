@@ -1,15 +1,15 @@
 from flask import Flask, render_template, request
 from parser import parse_obo, parse_gaf
 from OOP.analysis import AnnotationMatrixBuilder
-from OOP.similarity import SimilarityCalculator
-from statistics_module import Statistics
-from system import GOSystem
+from comparative.similarity import SimilarityCalculator
+from comparative.statistics import Statistics
+from main import GOSystem
 
 app = Flask(__name__)
 
 # Load system once
 obo_path = "data/go-basic.obo"
-gaf_path = "data/goa_human.gaf.gz"
+gaf_path = "data/goa_human.gaf"
 system = GOSystem(obo_path, gaf_path)
 
 
