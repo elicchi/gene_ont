@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from parser import parse_obo, parse_gaf
 from OOP.analysis import AnnotationMatrixBuilder
-from OOP.analysis import Neighbourhood
+from comparative.neighborhood import Neighbourhood
 from comparative.similarity import SimilarityCalculator
 from comparative.statistics import Statistics
 from main import GOSystem

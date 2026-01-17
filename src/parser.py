@@ -51,22 +51,30 @@ def parse_obo(obo_path):
 
 def parse_gaf(gaf_path, go_graph):
     gaf_obj = GAF()
-    cols = [1, 2, 4, 5, 8, 9]  # DB_Object_ID, Symbol, GO_ID, Evidence, Aspect
-    names = ['DB', 'Symbol', 'GO_ID', 'Evidence', 'Aspect', 'DB_Object_Synonym']
 
-    # handle gz automatically
-    df = pd.read_csv(gaf_path, sep='\t', comment='!', header=None, usecols=cols, names=names, low_memory=False)
+    cols = [1, 2, 4, 6, 8]
+    names = ['DB_Object_ID', 'Symbol', 'GO_ID', 'Evidence', 'Aspect']
+
+    df = pd.read_csv(
+        gaf_path,
+        sep='\t',
+        comment='!',
+        header=None,
+        usecols=cols,
+        names=names,
+        low_memory=False
+    )
 
     for _, row in df.iterrows():
         go_term = go_graph.get_term(row['GO_ID'])
         if not go_term:
             continue
 
-        # Create Annotation object based on Evidence code
         evidence = row['Evidence']
-        if evidence in ['EXP', 'IDA', 'IPI', 'IMP', 'IGI', 'IEP']:
+
+        if evidence in {'EXP','IDA','IPI','IMP','IGI','IEP','HDA','HMP','HGI','HEP'}:
             ann = ExperimentalAnnotation(row['Symbol'], go_term)
-        elif evidence in ['ISS', 'ISO', 'ISA', 'ISM', 'IGC', 'IBA', 'IBD', 'IKR', 'IRD', 'RCA']:
+        elif evidence in {'IEA','ISS','ISO','ISA','ISM','IGC','RCA'}:
             ann = ComputationalAnnotation(row['Symbol'], go_term)
         else:
             ann = CuratedAnnotation(row['Symbol'], go_term)
@@ -74,6 +82,7 @@ def parse_gaf(gaf_path, go_graph):
         gaf_obj.add_annotation(ann)
 
     return gaf_obj
+
 
 # Usage
 # go_graph = parse_obo("go-basic.obo")
