@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GO Annotation Matrix</title>
+</head>
+<body>
+    <h1>GO Annotation Matrix</h1>
+    <p>Displaying a subset of genes × GO terms (first 20 genes and first 20 GO terms)</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Gene / GO Term</th>
+                {% for term in terms %}
+                    <th>{{ term }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for i, gene in enumerate(genes) %}
+                <tr>
+                    <td>{{ gene }}</td>
+                    {% for val in matrix[i] %}
+                        <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>
