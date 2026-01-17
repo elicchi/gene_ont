@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GO Term Details</title>
+</head>
+<body>
+
+{% if error %}
+    <p>{{ error }}</p>
+{% else %}
+    <h1>{{ term.ID }} – {{ term.name }}</h1>
+
+    <p><strong>Namespace:</strong> {{ term.namespace }}</p>
+    <p><strong>Definition:</strong> {{ term.definition }}</p>
+
+    <h2>Annotated Genes</h2>
+    <ul>
+        {% for gene in genes[:50] %}
+            <li>{{ gene }}</li>
+        {% endfor %}
+    </ul>
+    <p>Total genes: {{ genes|length }}</p>
+{% endif %}
+
+<a href="/">Back</a>
+</body>
+</html>
