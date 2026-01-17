@@ -43,22 +43,17 @@ def term():
 def stats():
     go_id = request.args.get("go_id")
     stats_obj = Statistics(system.gaf)
-    
+
     if not go_id:
-        return render_template("stats.html")
-        
+        return render_template("stats.html")  # or a simple form page
+
     result = stats_obj.tc_statistics(go_id)
-    
-    if isinstance(result, str):
-        return render_template(
-            "stats.html",
-            go_id=go_id,
-            error=result
-        )
-        
+
+    if isinstance(result, str):  # error message
+        return render_template("stats.html", error=result)
+
     return render_template(
-        "stats.html",
-        go_id=go_id,
+        "matrix_single_term.html",  # new template
         stats=result
     )
 
@@ -126,31 +121,6 @@ def neighbourhood_view():
         term_id=term_id
     )
 
-# Matrix view
-@app.route("/matrix_stats")
-def matrix_stats_view():
-    stats_obj = Statistics(system.gaf)
-    summary = stats_obj.get_summary()  # returns dict with stats per GO term
-
-    # Convert summary dict to lists for table
-    go_terms = []
-    num_genes = []
-    mean_anns = []
-    std_anns = []
-
-    for go_id, stat in summary.items():
-        go_terms.append(go_id)
-        num_genes.append(stat["num_genes"])
-        mean_anns.append(stat["annotations_per_gene_mean"])
-        std_anns.append(stat["annotations_per_gene_std"])
-
-    return render_template(
-        "matrix_stats.html",
-        go_terms=go_terms,
-        num_genes=num_genes,
-        mean_anns=mean_anns,
-        std_anns=std_anns
-    )
 
 if __name__ == "__main__":
     app.run(debug=True)
