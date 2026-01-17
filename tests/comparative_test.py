@@ -15,7 +15,6 @@ from comparative.neighborhood import Neighbourhood
 from comparative.statistics import Statistics
 from comparative.similarity import SimilarityCalculator
 
-
 graph = GOgraph()
 
 root_bp = GOterm("GO:0008150", "biological_process", "BP", "root")
@@ -52,24 +51,21 @@ print("Apoptosis Parent:", apoptosis.parents[0].name)  # → cell killing
 print("Root Children:", [c.name for c in root_bp.children]) # → ['cell killing']
 #output --> Root Children: ['cell killing']
 
-#  TEST NEIGHBOURHOOD 
 
+#  TEST NEIGHBOURHOOD 
 nb = Neighbourhood(graph)
 
 dev_proc = GOterm("GO:0032502", "developmental process", "BP", "dev")
 graph.add_term(dev_proc)
 graph.add_edge("GO:0008150", "GO:0032502") # root -> dev process
 
-
 sibs = nb.get_siblings("GO:0001906") # siblings of cell killing
 print("Siblings of 'cell killing':", [t.name for t in sibs]) 
 #output --> Siblings of 'cell killing': ['developmental process']
 
-
 desc = nb.get_descendants("GO:0008150") # descendants of root
 print("Descendants of 'root':", [t.name for t in desc])
 #output --> Descendants of 'root': ['cell killing', 'developmental process', 'apoptotic process']
-
 
 nb_graph = nb.build_neighbourhood_graph("GO:0008150")
 print("Neighbourhood Graph Keys (Root):", list(nb_graph.keys()))
@@ -77,49 +73,47 @@ print("Neighbourhood Graph Keys (Root):", list(nb_graph.keys()))
 
 
 # TEST STATISTICS 
-builder = AnnotationMatrixBuilder(gaf)
-matrix, genes, terms = builder.build()
-stats = Statistics(gaf, matrix, genes, terms)
-# Test Term Count Stats
-stats.tc_statistics()
-#Mean:   1.33
-#Median: 1.00
-#Std:    0.47
+stats = Statistics(gaf)
+# 1. Get unique GO term IDs from the GAF
+unique_term_ids = {ann.GOterm.ID for ann in gaf.annotations}
+final_output = {}
+for go_id in unique_term_ids:
+    # We call the method; since we know these IDs exist in gaf
+    data = stats.tc_statistics(go_id)
+    
+    # Store in the dictionary using the GO ID as the key
+    final_output[go_id] = {
+        'num_genes': data['num_genes'],
+        'annotations_per_gene_mean': data['annotations_per_gene_mean'],
+        'annotations_per_gene_std': data['annotations_per_gene_std'],
+        'category_breakdown': data['category_breakdown']
+    }
+print(f"statstical analysis {final_output}")
+#output -->statstical analysis {'GO:0003674': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}, 'GO:0008150': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'computational': 1}}, 'GO:0006915': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}, 'GO:0001906': {'num_genes': 1, 'annotations_per_gene_mean': 1.0, 'annotations_per_gene_std': 0.0, 'category_breakdown': {'experimental': 1}}}
 
-# Test Annotation Stats
-ann_stats = stats.ann_statistics()
-print("Unique Genes:", ann_stats['unique_genes'])
-#output --> Unique Genes: 3
-print("Category Breakdown:", ann_stats['category_breakdown'])
-#output --> Category Breakdown: {'experimental': 3, 'computational': 1}
 
 #  TEST SIMILARITY 
 calc = SimilarityCalculator()
-
 # 1. Compare TP53 (Apoptosis, Exp) vs BRCA1 (Root, Comp)
 ann_tp53 = annotations[0] 
 ann_brca = annotations[2]
 print(f"Comparing {ann_tp53.gene_id} ({ann_tp53.GOterm.name}) vs {ann_brca.gene_id} ({ann_brca.GOterm.name})")
 #output --> Comparing TP53 (apoptotic process) vs BRCA1 (biological_process)
 
-
 # Test Semantic Similarity (GO ID)
 sim_go = calc.similarity_goid(ann_tp53.GOterm, ann_brca.GOterm)
 print(f"GO Semantic Similarity: {sim_go:.4f}")
 #output --> GO Semantic Similarity: 0.3333
-
 
 # Test Namespace Similarity
 sim_ns = calc.similarity_namespace(ann_tp53.GOterm, ann_brca.GOterm)
 print(f"Namespace Similarity: {sim_ns}")
 #output --> Namespace Similarity: True
 
-
 # Test Evidence Similarity
 sim_ev = calc.similarity_evidence(ann_tp53, ann_brca)
 print(f"Evidence Similarity: {sim_ev}")
 #output --> Evidence Similarity: False
-
 
 # Test Full Calculation (Should now only have 3 keys)
 full_results = calc.similarity_bet_annotations(ann_tp53, ann_brca)
