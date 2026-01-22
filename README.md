@@ -22,7 +22,9 @@ src/
 
 │ └──  statistics.py         # Annotation statistics(mean,median,std)
 
-├── main #Paart 2: Integration
+├── main #Part 2: Integration
+
+├── app/ # Part 4: User Interface
 
 ├── data/ # The GO and GAF files
 
