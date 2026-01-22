@@ -32,6 +32,8 @@ src/
 
 tests/ # Development tests
 
+The project report can be found in the code files under the name "Gene Ontology Analysis System"
+
 ## Required data files
 
 The following files are required but not included due to GitHub size limits:
