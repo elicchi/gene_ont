@@ -4,7 +4,7 @@ Project structure:
 
 src/
 
-├── parsing/ # Part 1: OBO and GAF parsing ()
+├── parser/ # Part 1: OBO and GAF parsing ()
 
 ├── OOP/ # Part 2: Ontology representation and analysis
 
@@ -14,19 +14,21 @@ src/
 
 │ └── analysis.py # NumPy-based numerical representations
 
-├── comparative/              # Part 3: Analytical and comparative computations
+├── comparative/ # Part 3: Analytical and comparative computations
 
-│ ├── similarity.py         # similarity metrics(between terms,annotations)
+│ ├── similarity.py # similarity metrics(between terms,annotations)
 
-│ ├── neighborhood.py       # GO graph neighborhood, sibling/descendant computations
+│ ├── neighborhood.py # GO graph neighborhood, sibling/descendant computations
 
-│ └──  statistics.py         # Annotation statistics(mean,median,std)
+│ └──  statistics.py # Annotation statistics(mean,median,std)
 
 ├── main #Part 2: Integration
 
 ├── app/ # Part 4: User Interface
 
 ├── data/ # The GO and GAF files
+
+├── templates/ # Part 4: User Interface
 
 tests/ # Development tests
 
